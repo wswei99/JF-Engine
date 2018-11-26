@@ -1,5 +1,4 @@
 import CanvasRender from "./CanvasRender";
-import Stage from "../display/Stage";
 
 export default class Renderer {
     constructor(width, height, bgColor) {

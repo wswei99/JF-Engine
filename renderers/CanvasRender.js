@@ -1,4 +1,3 @@
-import Stage from "../display/Stage";
 
 export default class CanvasRender {
     constructor(canvas = document.createElement('canvas')) {
@@ -13,7 +12,8 @@ export default class CanvasRender {
             this.context.globalCompositeOperation = this.blendMode = view.blendMode;
         }
         this.context.save();
-        this.transform(view);
+        // this.transform(view);
+
         // render
         if (view.background) {
             this.context.fillStyle = view.background;

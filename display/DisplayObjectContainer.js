@@ -1,6 +1,4 @@
 import DisplayObject from "./DisplayObject";
-import Stage from "./Stage";
-import RenderCheck from "../renderers/RenderCheck";
 export default class DisplayObjectContainer extends DisplayObject{
     constructor(){
         super();
@@ -11,7 +9,21 @@ export default class DisplayObjectContainer extends DisplayObject{
             view.parent.removeChild(view);
         }
         view.parent = this;
+        let len = view.parent.childList.length;
+        let preView = len > 0 ? view.parent.childList[len-1] : view.parent;
+        let nextView = preView.nextView;
+        // 添加到全局的显示链条中去
+        preView.nextView = view;
+        view.preView = preView;
+        view.nextView = nextView;
+        nextView && (nextView.preView = view);
+
         this.childList.push(view);
+        view.zIndex = this.childList.length - 1;   
+        // 更新全局坐标
+        view.coordinateToStage.x = view.x + view.parent.coordinateToStage.x;
+        view.coordinateToStage.y = view.y + view.parent.coordinateToStage.y;    
+
         // 修改矩阵,触发渲染
         view.matrix.g += 1;
         return this;
@@ -24,6 +36,7 @@ export default class DisplayObjectContainer extends DisplayObject{
             if(view.uid === this.childList[i].uid){
                 this.childList.splice(i, 1);
                 view.parent = null;
+                view.zIndex = -1;
                 break;
             }
         }

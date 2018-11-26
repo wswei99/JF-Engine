@@ -1,6 +1,4 @@
 import DisplayObjectContainer from "./DisplayObjectContainer";
-import Renderer from '../renderers/Renderer';
-import Timer from "../utils/Timer";
 import RenderCheck from "../renderers/RenderCheck";
 
 export default class Stage extends DisplayObjectContainer {
@@ -13,7 +11,9 @@ export default class Stage extends DisplayObjectContainer {
         // this.timer = new Timer(() => { this.renderer.render() });
         // this.timer.start();
 
-        RenderCheck.stageRender(this);
+        this.preView = "root";
+
+        RenderCheck.render(this);
         this.view1 = null;
         this.view2 = null;
 
@@ -26,11 +26,11 @@ export default class Stage extends DisplayObjectContainer {
         let view1 = new DisplayObjectContainer();
         view1.width = 275;
         view1.height = 567;
-        view1.background = 'red';
+        view1.background = 'green';
         this.addChild(view1);
         view1.y = 50;
         view1.x = 50;
-        // this.view1 = view1;
+        this.view1 = view1;
 
 
         let view2 = new DisplayObjectContainer();
@@ -38,9 +38,22 @@ export default class Stage extends DisplayObjectContainer {
         view2.height = 100;
         view2.background = 'cyan';
         view1.addChild(view2);
-        view2.x = 0;
-        view2.y = 0;
+        view2.x = 50;
+        view2.y = 50;
         this.view2 = view2;
+
+        // console.log(view2);
+
+
+        // let view3 = new DisplayObjectContainer();
+        // view3.width = 50;
+        // view3.height = 50;
+        // view3.x = 25;
+        // view3.y = 25;
+        // view3.background = 'orange';
+        // view2.addChild(view3);
+
+
         // setInterval(() => {
         //     view1.x += 5;
         //     // console.log(view2);
@@ -60,12 +73,12 @@ export default class Stage extends DisplayObjectContainer {
     }
     test() {
         // console.log(111)
-        if (this.view2.x + this.view2.width > this.width -50 || this.view2.x < -50) {
+        if (this.view2.x + this.view2.width > this.view1.width || this.view2.x <0) {
             this.speedX = -this.speedX;
             // this.background = 'cyan';
         }
         this.view2.x += this.speedX;
-        if (this.view2.y + this.view2.height > this.height - 50 || this.view2.y < -50) {
+        if (this.view2.y + this.view2.height > this.view1.height|| this.view2.y < 0) {
             this.speedY = -this.speedY;
         }
         this.view2.y += this.speedY;
