@@ -15,6 +15,8 @@ export default class Matrix {
         this.d = d;
         this.e = e;
         this.f = f;
+        // g为特别标识符,如果父视图发生改变,可以修改g值来让子视图响应渲染
+        this.g = 0;
 
         return this;
     }

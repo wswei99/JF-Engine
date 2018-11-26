@@ -17,12 +17,13 @@ export default class CanvasRender {
         // render
         if (view.background) {
             this.context.fillStyle = view.background;
-            if (view.renderRect) {
+            if (view.renderRect.width > 0 && view.renderRect.height > 0) {
                     let renderRect = view.renderRect;
-                    this.context.fillRect(renderRect.x, renderRect.y, renderRect.w, renderRect.h);
-            } else {
-                this.context.fillRect(0, 0, view.width, view.height);
-            }
+                    this.context.fillRect(renderRect.x, renderRect.y, renderRect.width, renderRect.height);
+            } 
+            // else {
+            //     this.context.fillRect(0, 0, view.width, view.height);
+            // }
         }
         // 渲染纹理
         if (view.image) {
@@ -35,7 +36,7 @@ export default class CanvasRender {
         
     }
     transform(view) {
-        this.context.transform(view.matrix.a, view.matrix.b, view.matrix.c, view.matrix.d, view.matrix.e, view.matrix.f);
+        this.context.transform(view.worldMatrix.a, view.worldMatrix.b, view.worldMatrix.c, view.worldMatrix.d, view.worldMatrix.e, view.worldMatrix.f);
     }
 
 }

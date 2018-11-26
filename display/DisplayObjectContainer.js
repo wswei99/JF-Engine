@@ -12,10 +12,8 @@ export default class DisplayObjectContainer extends DisplayObject{
         }
         view.parent = this;
         this.childList.push(view);
-        
-        // 首先要计算矩阵
-        RenderCheck.render(view);
-
+        // 修改矩阵,触发渲染
+        view.matrix.g += 1;
         return this;
     }
     addChildAt(view, i){

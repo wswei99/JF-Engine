@@ -1,8 +1,6 @@
 import EventEmitter from "../events/EventEmitter";
 import { getUID } from "../utils/Util";
-import Transform from "../geom/Transform";
 import Rectangle from './Rectangle';
-import Stage from "./Stage";
 import Matrix from "../geom/Matrix";
 import RenderCheck from "../renderers/RenderCheck";
 /**
@@ -33,7 +31,7 @@ export default class DisplayObject extends EventEmitter {
         // 表示包含此显示对象的 DisplayObjectContainer 对象
         this.parent = null;
         // 绘制区域
-        this.renderRect = new Rectangle(0,0,50,50);
+        this.renderRect = new Rectangle();
         // 背景颜色
         this.background = null;
 
@@ -42,48 +40,86 @@ export default class DisplayObject extends EventEmitter {
 
         let self = this;
         this.matrix = new Proxy(this.localMatrix, {
-            set(trapTarget, key, value, receiver){
-                RenderCheck.check(self);
+            set(trapTarget, key, value, receiver) {
+
+                if (self.parent) {
+                    if(key !== 'g'){
+                        // 父类先渲染子类所在区域
+                        self.parent.renderRect = RenderCheck.getRenderRect(self);
+                        RenderCheck.renderer.render(self.parent); 
+                    }
+                    // 修改自己世界Matrix
+                    Reflect.set(trapTarget, key, value, receiver)
+                    self.updateMatrix();
+                    // self.renderRect = RenderCheck.getRenderRect(self);
+                    self.renderRect.height = RenderCheck.getRenderRect(self).height;
+                    self.renderRect.width = RenderCheck.getRenderRect(self).width;
+                    self.renderRect.x = RenderCheck.getRenderRect(self).x - self.x;
+                    self.renderRect.y = RenderCheck.getRenderRect(self).y - self.y;
+
+                    // 执行自身的渲染
+                    RenderCheck.render(self);
+                    // 执行子类的渲染
+                    // if(self.childList && self.childList.length > 0){
+                    //     for(let i = 0, len = self.childList.length; i < len; i++){
+                    //         let child = self.childList[i];
+                    //         child.matrix.g += 1;
+                    //     }
+                    // }
+                }
+                // 检测父类是否需要渲染
+                // RenderCheck.check(self);
+
                 return Reflect.set(trapTarget, key, value, receiver);
+                // return true;
             }
         })
     }
+    updateMatrix() {
+        const lm = this.localMatrix;
+        // wsw 暂时不实现倾斜功能和缩放
+        const pwm = this.parent.worldMatrix;
+        const wm = this.worldMatrix;
+
+        wm.a = (lm.a * pwm.a) + (lm.b * pwm.c);
+        wm.b = (lm.a * pwm.b) + (lm.b * pwm.d);
+        wm.c = (lm.c * pwm.a) + (lm.d * pwm.c);
+        wm.d = (lm.c * pwm.b) + (lm.d * pwm.d);
+        wm.e = (lm.e * pwm.a) + (lm.f * pwm.c) + pwm.e;
+        wm.f = (lm.e * pwm.b) + (lm.f * pwm.d) + pwm.f;
+    }
 
     set x(value) {
-        if(value !== this.matrix.e){
+        if (value !== this.matrix.e) {
             this.matrix.e = value;
-            // 执行自身的渲染
-            RenderCheck.render(this);
         }
     }
     get x() {
         return this.matrix.e;
     }
     set y(value) {
-        if(value !== this.matrix.f){
+        if (value !== this.matrix.f) {
             this.matrix.f = value;
-            // 执行自身的渲染
-            RenderCheck.render(this);
         }
     }
     get y() {
         return this.matrix.f;
     }
-    
-    set width(value){
+
+    set width(value) {
         this._w = value;
-        this.renderRect.w = value;
+        this.renderRect.width = value;
         RenderCheck.render(this);
     }
-    get width(){
+    get width() {
         return this._w;
     }
-    set height(value){
+    set height(value) {
         this._h = value;
-        this.renderRect.h = value;
+        this.renderRect.height = value;
         RenderCheck.render(this);
     }
-    get height(){
+    get height() {
         return this._h;
     }
 
