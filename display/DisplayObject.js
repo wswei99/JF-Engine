@@ -53,94 +53,102 @@ export default class DisplayObject extends EventEmitter {
         this.matrix = new Proxy(this.localMatrix, {
             set(trapTarget, key, value, receiver) {
                 if (self.parent) {
-                    // 更新坐标
-
-
-
                     // 渲染分两步,向下和向上(添加中间层overflowList)
                     // 先判断是否有子类超出父视图
                     // wsw 暂时实现视图变动前矩形渲染,后期需要优化成移动前后差异区域渲染
                     if (RenderCheck.overflowList.length === 0) {
-                        // 所有子视图都被父视图所包含
-                        // 先向下渲染,即找出当前视图所在位置的下层视图,让它(们)去渲染
-
-                        // 先找兄弟视图
-                        let pView = self.preView;
-                        // 所有相交的视图
+                        // 先向前渲染,即找出当前视图所在位置的下层视图,让它(们)去渲染
+                        // 如果是addchild等方法引起的渲染,则不进行向前渲染
                         let crossViewList = [];
-                        while (pView !== 'root'){
-                            // 判断当前视图和被遍历视图是否相交
-                            let crossRect = RenderCheck.viewCross(self, pView);
+                        if (key !== 'g') {
+                            let pView = self.preView;
+                            // 所有相交的视图
+                            while (pView !== 'root') {
+                                // 判断当前视图和被遍历视图是否相交
+                                let crossRect = RenderCheck.viewCross(self, pView);
+                                if (crossRect) {
+                                    // 记录两视图相交的矩形区域
+                                    pView.renderRect = crossRect;
+                                    crossViewList.unshift(pView)
+                                    // 视图相交, 继续判断view是否全包围self
+                                    if (crossRect.x === self.coordinateToStage.x &&
+                                        crossRect.y === self.coordinateToStage.y &&
+                                        crossRect.width === self.width &&
+                                        crossRect.height === self.height
+                                    ) {
+                                        // view全包围self
+                                        // 停止遍历
+                                        break;
+                                    }
+                                }
+                                pView = pView.preView;
+                            }
+                        }
+                        // 把自身添加进渲染梯队
+                        crossViewList.push(self);
+                        // 向后渲染
+                        let nView = self.nextView;
+                        while (nView) {
+                            let crossRect = RenderCheck.viewCross(self, nView);
                             if (crossRect) {
-                                // 记录两视图相交的矩形区域
-                                pView.renderRect = crossRect;
+                                // 视图相交
+                                nView.renderRect = crossRect;
+                                crossViewList.push(nView);
                                 // 视图相交, 继续判断view是否全包围self
                                 if (crossRect.x === self.coordinateToStage.x &&
                                     crossRect.y === self.coordinateToStage.y &&
                                     crossRect.width === self.width &&
                                     crossRect.height === self.height
                                 ) {
-                                    // view全包围self
-                                    // 渲染view
-                                    crossViewList.push(pView)
-                                    // RenderCheck.render(view);
-                                    // 停止遍历
                                     break;
-                                } else {
-                                    // wsw view 部分包围self,需要继续寻找,知道找全所有包围self的视图
-                                    crossViewList.push(pView);
                                 }
                             }
-                            pView = pView.preView;
-                        } 
-                        // 倒序遍历,分个渲染
-                        for (let i = crossViewList.length - 1; i >= 0; i--) {
+                            nView = nView.nextView;
+                        }
+                        // 更新自身信息
+                        Reflect.set(trapTarget, key, value, receiver);
+                        // 更新坐标
+                        if (key === 'e' || key === 'f' || key === 'g') {
+                            self.coordinateToStage.x = self.matrix.e + self.parent.coordinateToStage.x;
+                            self.coordinateToStage.y = self.matrix.f + self.parent.coordinateToStage.y;
+                            self.renderRect.x = self.coordinateToStage.x;
+                            self.renderRect.y = self.coordinateToStage.y;
+                        }
+                        
+                        // 渲染所有需要渲染的元素(内含大量重复绘制图形,需要后期优化);
+                        for (let i = 0; i < crossViewList.length; i++) {
                             let view = crossViewList[i];
                             RenderCheck.render(view);
                         }
-                        // 向上渲染
-                        if (self.zIndex < self.parent.childList.length - 1) {
-                            // self 上方还存在兄弟视图
+                        crossViewList.length = 0;
+                        // 重新查询身后视图是否需要绘制
+                        nView = self.nextView;
+                        while (nView) {
+                            let crossRect = RenderCheck.viewCross(self, nView);
+                            if (crossRect) {
+                                // 视图相交
+                                nView.renderRect = crossRect;
+                                crossViewList.push(nView);
+                                // 视图相交, 继续判断view是否全包围self
+                                if (crossRect.x === self.coordinateToStage.x &&
+                                    crossRect.y === self.coordinateToStage.y &&
+                                    crossRect.width === self.width &&
+                                    crossRect.height === self.height
+                                ) {
+                                    break;
+                                }
+                            }
+                            nView = nView.nextView;
                         }
+                        for (let i = 0; i < crossViewList.length; i++) {
+                            let view = crossViewList[i];
+                            RenderCheck.render(view);
+                        }
+
+
                     } else {
                         // wsw 有子视图超出自己父视图的显示范围
                     }
-
-                    // 渲染自身,先更新属性
-                    Reflect.set(trapTarget, key, value, receiver);
-                    // 更新坐标
-                    if (key === 'e' || key === 'f' || key === 'g') {
-                        self.coordinateToStage.x = self.matrix.e + self.parent.coordinateToStage.x;
-                        self.coordinateToStage.y = self.matrix.f + self.parent.coordinateToStage.y;
-                        self.renderRect.x = self.coordinateToStage.x;
-                        self.renderRect.y = self.coordinateToStage.y;
-                    }
-                    RenderCheck.render(self);
-
-
-                    // if(key !== 'g'){
-                    //     // 父类先渲染子类所在区域
-                    //     self.parent.renderRect = RenderCheck.getRenderRect(self);
-                    //     RenderCheck.renderer.render(self.parent); 
-                    // }
-                    // // 修改自己世界Matrix
-                    // Reflect.set(trapTarget, key, value, receiver)
-                    // self.updateMatrix();
-                    // // self.renderRect = RenderCheck.getRenderRect(self);
-                    // console.log(self.parent.renderRect);
-                    // self.renderRect.height = RenderCheck.getRenderRect(self).height;
-                    // self.renderRect.width = RenderCheck.getRenderRect(self).width;
-                    // self.renderRect.x = RenderCheck.getRenderRect(self).x - self.x;
-                    // self.renderRect.y = RenderCheck.getRenderRect(self).y - self.y;
-                    // // 执行自身的渲染
-                    // RenderCheck.render(self);
-                    // // 执行子类的渲染
-                    // if(self.childList && self.childList.length > 0){
-                    //     for(let i = 0, len = self.childList.length; i < len; i++){
-                    //         let child = self.childList[i];
-                    //         child.matrix.g += 1;
-                    //     }
-                    // }
                 }
                 return Reflect.set(trapTarget, key, value, receiver);
             }

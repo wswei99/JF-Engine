@@ -38,31 +38,30 @@ export default class Stage extends DisplayObjectContainer {
         view2.height = 100;
         view2.background = 'cyan';
         view1.addChild(view2);
-        view2.x = 50;
+        view2.x = 0;
         view2.y = 50;
         this.view2 = view2;
 
         // console.log(view2);
 
 
-        // let view3 = new DisplayObjectContainer();
-        // view3.width = 50;
-        // view3.height = 50;
-        // view3.x = 25;
-        // view3.y = 25;
-        // view3.background = 'orange';
-        // view2.addChild(view3);
+        let view3 = new DisplayObjectContainer();
+        view3.width = 250;
+        view3.height = 150;
+        view3.x = 25;
+        view3.y = 25;
+        view3.background = 'orange';
+        view1.addChild(view3);
 
 
         // setInterval(() => {
-        //     view1.x += 5;
+        //     view2.y -= 5;
         //     // console.log(view2);
         // }, 500);
 
         // setTimeout(() => {
-        //     // this.renderer.renderType.context.clearRect(view1.x, view1.y, view1.width, view1.height);
-        //     view2.x = 150;
-        // }, 1000);
+        //     view2.y += 5;
+        // }, 2000);
 
 
         this.speedX = 2;
@@ -78,10 +77,12 @@ export default class Stage extends DisplayObjectContainer {
             // this.background = 'cyan';
         }
         this.view2.x += this.speedX;
+
         if (this.view2.y + this.view2.height > this.view1.height|| this.view2.y < 0) {
             this.speedY = -this.speedY;
         }
         this.view2.y += this.speedY;
+        
         let self = this;
         requestAnimationFrame(self.test.bind(this));
     }
