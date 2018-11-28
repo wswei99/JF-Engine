@@ -19,6 +19,7 @@ export default class CanvasRender {
             this.context.fillStyle = view.background;
             if (view.renderRect.width > 0 && view.renderRect.height > 0) {
                     let renderRect = view.renderRect;
+
                     this.context.fillRect(renderRect.x, renderRect.y, renderRect.width, renderRect.height);
             } 
             // else {

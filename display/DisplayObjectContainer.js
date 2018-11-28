@@ -10,7 +10,15 @@ export default class DisplayObjectContainer extends DisplayObject{
         }
         view.parent = this;
         let len = view.parent.childList.length;
+        
         let preView = len > 0 ? view.parent.childList[len-1] : view.parent;
+        // 查找链表最后一个视图
+        while(preView.childList && preView.childList.length > 0){
+            preView = preView.childList[preView.childList.length-1];
+        }
+
+
+
         let nextView = preView.nextView;
         // 添加到全局的显示链条中去
         preView.nextView = view;
