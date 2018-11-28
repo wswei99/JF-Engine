@@ -1,6 +1,7 @@
 import DisplayObjectContainer from "./DisplayObjectContainer";
 import RenderCheck from "../renderers/RenderCheck";
 import Timer from "../utils/Timer";
+import Rectangle from "./Rectangle";
 
 export default class Stage extends DisplayObjectContainer {
     constructor(width = 375, height = 667, bgColor = '#ccc') {
@@ -29,8 +30,8 @@ export default class Stage extends DisplayObjectContainer {
     }
     init() {
         let view1 = new DisplayObjectContainer();
-        view1.width = 275;
-        view1.height = 567;
+        view1.width = this.width - 100;
+        view1.height = this.height - 100;
         view1.background = 'green';
         this.addChild(view1);
         view1.y = 50;
@@ -60,7 +61,7 @@ export default class Stage extends DisplayObjectContainer {
     
         // this.list = []
 
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 2000; i++) {
             let view = new DisplayObjectContainer();
             view.width =  Math.floor(Math.random()*100);
             view.height =  Math.floor(Math.random()*100);
@@ -100,6 +101,14 @@ export default class Stage extends DisplayObjectContainer {
     }
     test(data) {
         // console.log(Math.floor(1000/data))
+        let v = this.nextView;
+        RenderCheck.renderer.renderType.context.clearRect(0,0,this.width, this.height);
+        while(v){
+            v.renderRect = new Rectangle(v.x, v.y, v.width, v.height);
+            RenderCheck.render(v);
+            v = v.nextView;
+        }
+        
         
         let fTime = new Date();
         if(fTime - this._sTime >= 1000){
@@ -116,12 +125,12 @@ export default class Stage extends DisplayObjectContainer {
 
         for(let i = 0, len = this.list.length;i < len; i++){
             let view = this.list[i];
-            if(view.x + view.width > this.width -50 || view.x < -50){
+            if(view.x + view.width > this.width || view.x < -50){
                 view.speedX = -view.speedX;
             }
-            view.x += view.speedX;
+            view.x += view.speedX; 
 
-            if(view.y + view.height > this.height -50 || view.y < -50){
+            if(view.y + view.height > this.height || view.y < -50){
                 view.speedY = -view.speedY;
             }
             view.y += view.speedY;

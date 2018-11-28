@@ -9,8 +9,10 @@ export default class CanvasRender {
     render(view) {
         // preRender
         if (view.blendMode !== this.blendMode) {
-            this.context.globalCompositeOperation = this.blendMode = view.blendMode;
+            this.context.globalCompositeOperation = view.blendMode;
         }
+        this.context.globalCompositeOperation = 'xor';
+
         this.context.save();
         // this.transform(view);
 

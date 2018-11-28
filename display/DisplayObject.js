@@ -52,6 +52,7 @@ export default class DisplayObject extends EventEmitter {
         // 对矩阵设置陷阱
         this.matrix = new Proxy(this.localMatrix, {
             set(trapTarget, key, value, receiver) {
+                return Reflect.set(trapTarget, key, value, receiver);
                 if (self.parent) {
 
                     // 首先计算出变动前后的差异部分

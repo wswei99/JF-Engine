@@ -9,7 +9,7 @@ export default class RenderCheck {
             RenderCheck.renderer.render(view.parent);
         }
     }
-    static renderer = new Renderer(375, 667, '#ccc');
+    static renderer = new Renderer(1024, 768, '#ccc');
     static render(view) {
         (view.parent || view.uid === 1) && RenderCheck.renderer.render(view);
     }
