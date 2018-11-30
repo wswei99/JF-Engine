@@ -1,7 +1,7 @@
 import CanvasRender from "./CanvasRender";
 
 export default class Renderer {
-    constructor(width, height, bgColor) {
+    constructor(width, height, stage) {
         this.width = width;
         this.height = height;
         this.canvas = document.createElement('canvas');
@@ -10,7 +10,7 @@ export default class Renderer {
         // 更新窗口大小
         this.resize(this.width, this.height);
         // wsw 后期添加支持webgl
-        this.renderType = new CanvasRender(this.canvas);
+        this.renderType = new CanvasRender(this.canvas, stage);
     }
     isWebGLSupported() {
         const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
@@ -40,8 +40,7 @@ export default class Renderer {
             this.canvas.style.height = `${height}px`;
         }
     }
-    render(view) {
-        this.renderType.render(view);
-
+    render() {
+        this.renderType.update();
     }
 }

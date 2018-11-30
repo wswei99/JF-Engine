@@ -2,7 +2,7 @@ import EventEmitter from "../events/EventEmitter";
 import { timerEvent } from '../events/Events';
 
 export default class Timer extends EventEmitter{
-    constructor(callback){
+    constructor(callback, context){
         super();
         this._requestId = null;
         this.started = false;
@@ -18,7 +18,7 @@ export default class Timer extends EventEmitter{
                 }
             }
         }
-        this.on(timerEvent.timer,this.callback);
+        this.on(timerEvent.timer, this.callback, context);
     }
     start(){
         this.started = true;

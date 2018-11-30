@@ -1,6 +1,6 @@
 import Stage from "./display/Stage";
 
-const stage = new Stage(1024, 768);
+const stage = new Stage(375, 667);
 export const jf = {
     stage
 }
