@@ -24,12 +24,13 @@ export default class DoublyLinkedList {
         parent.childList.push(child);
         child.zIndex = parent.childList.length - 1;
         // 先遍历出父类的最后尾节点
-        let pView = parent.tail;
-        while (pView) {
+        let pView = parent;
+        while (pView.tail) {
             pView = pView.tail;
         }
         DoublyLinkedList.insert(pView || parent, child);
         parent.tail = child;
+
     }
     // 将元素从链表中移除
     static removeAt(view) {

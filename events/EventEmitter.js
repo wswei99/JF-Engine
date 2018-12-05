@@ -33,7 +33,7 @@ export default class EventEmitter{
             eventType = type.type;
         }
         let fns = this.listeners && this.listeners[eventType];
-        if (Object.keys(fns)) {
+        if (fns && Object.keys(fns)) {
             for(let key in fns){
                 fns[key].fn.call(fns[key].context, param);
             }

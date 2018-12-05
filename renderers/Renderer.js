@@ -11,6 +11,9 @@ export default class Renderer {
         this.resize(this.width, this.height);
         // wsw 后期添加支持webgl
         this.renderType = new CanvasRender(this.canvas, stage);
+
+
+        this.testNum = 0;
     }
     isWebGLSupported() {
         const contextOptions = { stencil: true, failIfMajorPerformanceCaveat: true };
@@ -41,6 +44,7 @@ export default class Renderer {
         }
     }
     render() {
+        if(this.testNum++ < 1)
         this.renderType.update();
     }
 }

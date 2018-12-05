@@ -8,6 +8,8 @@ export default class Timer extends EventEmitter{
         this.started = false;
         this.speed = 1;
         this.lastTime = -1;
+        // 时间
+        this.time = this.time || Date
         this.callback = callback;
         this._tick = (time)=>{
             this._requestId = null;
@@ -23,16 +25,16 @@ export default class Timer extends EventEmitter{
     start(){
         this.started = true;
         if(this._requestId === null){
-            this.lastTime = performance.now();
+            this.lastTime = this.time.now();
             this._requestId = requestAnimationFrame(this._tick);
         }
     }
     stop(){
         this.started = false;
     }
-    update(currentTime = performance.now()){
+    update(currentTime = this.time.now()){
         this.emit(timerEvent.timer, currentTime - this.lastTime);
-        this.lastTime = performance.now();
+        this.lastTime = this.time.now();
     }
     reset(){
         // wsw

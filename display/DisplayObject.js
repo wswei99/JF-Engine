@@ -18,6 +18,8 @@ export default class DisplayObject extends EventEmitter {
         this.transform = new Transform();
         this.width = 0;
         this.height = 0;
+
+
         
         this.alpha = 1;
         this.visible = true;
@@ -43,53 +45,74 @@ export default class DisplayObject extends EventEmitter {
         this.prevView = null;
     }
     // 更新本地矩阵到全局(父视图)矩阵
-    updateMatrix() {
-        const lm = this.localMatrix;
-        // wsw 暂时不实现倾斜功能和缩放
-        const pwm = this.parent.worldMatrix;
-        const wm = this.worldMatrix;
+    getWorldMatrix() {
 
-        wm.a = (lm.a * pwm.a) + (lm.b * pwm.c);
-        wm.b = (lm.a * pwm.b) + (lm.b * pwm.d);
-        wm.c = (lm.c * pwm.a) + (lm.d * pwm.c);
-        wm.d = (lm.c * pwm.b) + (lm.d * pwm.d);
-        wm.e = (lm.e * pwm.a) + (lm.f * pwm.c) + pwm.e;
-        wm.f = (lm.e * pwm.b) + (lm.f * pwm.d) + pwm.f;
+        if(this.prevView === 'root'){
+            return this.transform.matrix;
+        }
+
+        const ltm = this.transform.matrix;
+        // wsw 暂时不实现倾斜功能
+        const ptm = this.parent && this.parent.getWorldMatrix();
+        const wtm = new Matrix();
+
+        wtm.a = (ltm.a * ptm.a) + (ltm.b * ptm.c);
+        wtm.b = (ltm.a * ptm.b) + (ltm.b * ptm.d);
+        wtm.c = (ltm.c * ptm.a) + (ltm.d * ptm.c);
+        wtm.d = (ltm.c * ptm.b) + (ltm.d * ptm.d);
+        wtm.tx = (ltm.tx * ptm.a) + (ltm.ty * ptm.c) + ptm.tx;
+        wtm.ty = (ltm.tx * ptm.b) + (ltm.ty * ptm.d) + ptm.ty;
+
+        return wtm;
     }
 
 
     set x(value) {
-        this.transform.transformTranslateX(value);
+        this.transform.updateTransform('x', value);
     }
     get x() {
-        return this.transform.matrix.e;
+        return this.transform.matrix.tx;
     }
     set y(value) {
-        this.transform.transformTranslateY(value);
+        this.transform.updateTransform('y',value);
     }
     get y() {
-        return this.transform.matrix.f;
+        return this.transform.matrix.ty;
     }
     set rotate(value) {
-        this.transform.transformRotate(value);
+        this.transform.updateTransform('rotate',value);
     }
     get rotate() {
         return this.transform.rotate;
     }
 
     set scaleX(value) {
-        this.transform.transformScaleX(value);
+        this.transform.updateTransform('scaleX',value);
     }
     get scaleX() {
         return this.transform.a;
     }
 
     set scaleY(value) {
-        this.transform.transformScaleY(value);
+        this.transform.updateTransform('scaleY',value);
     }
     get scaleY() {
         return this.transform.d;
     }
-
+    // 斜切
+    set skewX(value) {
+        this.transform.updateTransform('skewX',value);
+    }
+    get skewX() {
+        return this.transform.skewX;
+    }
+    // 斜切
+    set skewY(value) {
+        this.transform.updateTransform('skewY',value);
+    }
+    get skewY() {
+        return this.transform.skewY;
+    }
+    
     
 }

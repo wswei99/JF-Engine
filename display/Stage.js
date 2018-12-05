@@ -5,6 +5,7 @@ import Renderer from '../renderers/Renderer';
 // import RenderCheck from "../renderers/RenderCheck";
 import Timer from "../utils/Timer";
 import Rectangle from "./Rectangle";
+import { touchEvent } from "../events/Events";
 
 export default class Stage extends DisplayObjectContainer {
     constructor(width = 375, height = 667, bgColor = '#ccc') {
@@ -35,24 +36,37 @@ export default class Stage extends DisplayObjectContainer {
         view1.height = this.height - 100;
         view1.background = 'green';
         this.addChild(view1);
-        view1.y = 50;
+        // view1.y = 50;
         view1.x = 50;
-        this.view1 = view1;
-        view1.rotate = 30;
+        view1.y = 100;
+        // view1.x = 0;
+        // view1.y = 50;
+
+
+        // this.view1 = view1;
+        // view1.rotate = 30;
+        // view1.scaleX = 2;
+        // view1.scaleY = 0.5;
+        // view1.scaleX = 0.8;
+
 
 
         let view2 = new DisplayObjectContainer();
         view2.width = 100;
         view2.height = 100;
-        view2.background = 'orange';
+        view2.background = 'cyan';
         view1.addChild(view2);
+        // view2.transform.matrix = view1.transform.matrix;
         view2.x = 50;
         view2.y = 50;
-        view2.scaleX = 0.5;
-        // view2.rotate = 90;
-        // this.view2 = view2;
-
-        // console.log(view2);
+        // view2.scaleX = 2;
+        view2.rotate = 30;
+        // view2.transform.updateTransform(view1);
+        this.view2 = view2;
+        // view2.skewX = 0.5;
+        view2.on(touchEvent.tap, () => {
+            console.log('点击了view2');
+        })
 
 
         let view3 = new DisplayObjectContainer();
@@ -63,6 +77,12 @@ export default class Stage extends DisplayObjectContainer {
         view3.background = 'rgb(255,0,0)';
         view1.addChild(view3);
 
+        view3.on(touchEvent.tap, () => {
+            console.log('点击了view3');
+        })
+        view3.on(touchEvent.touchMove, () => {
+            console.log('点击了view的move');
+        })
         // this.list = []
 
         // for (let i = 0; i < 2000; i++) {
@@ -92,23 +112,23 @@ export default class Stage extends DisplayObjectContainer {
         //     // console.log(view2);
         // }, 500);
 
-        setTimeout(() => {
-            view1.removeChild(view2);
-        }, 2000);
+        // setTimeout(() => {
+        //     view1.removeChild(view2);
+        // }, 2000);
 
-        setTimeout(() => {
-            this.removeChild(view1);
-        }, 4000);
+        // setTimeout(() => {
+        //     this.removeChild(view1);
+        // }, 4000);
 
-        setTimeout(() => {
-            this.addChild(view1);
-        }, 6000);
+        // setTimeout(() => {
+        //     this.addChild(view1);
+        // }, 6000);
 
 
-        setTimeout(() => {
-            view3.addChild(view2);
-            console.log(this);
-        }, 8000);
+        // setTimeout(() => {
+        //     view3.addChild(view2);
+        //     console.log(this);
+        // }, 8000);
 
         // setTimeout(() => {
         //    this.timer.stop();
