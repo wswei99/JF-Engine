@@ -5,6 +5,7 @@ export default class Renderer {
         this.width = width;
         this.height = height;
         this.canvas = document.createElement('canvas');
+        this.canvas.style.position = 'absolute';
         // 添加到文档流
         document.body.appendChild(this.canvas);
         // 更新窗口大小

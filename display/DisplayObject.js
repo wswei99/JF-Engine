@@ -113,6 +113,19 @@ export default class DisplayObject extends EventEmitter {
     get skewY() {
         return this.transform.skewY;
     }
+    // 设置锚点
+    set anchorX(value) {
+        this.transform.updateTransform('anchorX',value);
+    }
+    get anchorX() {
+        return this.transform.anchorX;
+    }
+    set anchorY(value) {
+        this.transform.updateTransform('anchorY',value);
+    }
+    get anchorY() {
+        return this.transform.anchorY;
+    }
     
     
 }

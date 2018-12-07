@@ -18,18 +18,32 @@ export default class CanvasRender {
         this.checkPointInPath = false;
         this.tapPoint = new Point();
         this.tapView = null;
+
+        this.testNum = 0;
     }
-    update(view = this.stage) {
+    update(view = this.stage, firstView = true) {
         if (view.visible && view.alpha > 0) {
             this.context.save();
             this.render(view);
-            if(view.tail){
+            if (view.tail) {
                 this.update(view.nextView);
-                this.context.restore();
-            }else{
-                this.context.restore();
-                if(view.nextView){
-                    this.update(view.nextView);
+            }
+            this.context.restore();
+            if(!firstView){
+                return;
+            }
+            // 找出所有的兄弟视图
+            let parentUid = view.parent && view.parent.uid;
+            let tempView = view;
+            while (1) {
+                while (tempView.tail) {
+                    tempView = tempView.tail;
+                }
+                tempView = tempView.nextView;
+                if (tempView && tempView.parent.uid === parentUid) {
+                    this.update(tempView, false);
+                } else {
+                    break;
                 }
             }
         }
@@ -51,12 +65,15 @@ export default class CanvasRender {
             this.context.closePath();
         }
         // 渲染纹理
-        if (view.image) {
-
+        if (view.loaded) {
+            if (!view.width || !view.height) {
+                return;
+            }
+            this.context.drawImage(view.texture, 0, 0, view.width, view.height);
         }
 
         // 检测点击元素
-        if(this.checkPointInPath && this.context.isPointInPath(this.tapPoint.x, this.tapPoint.y)){
+        if (this.checkPointInPath && this.context.isPointInPath(this.tapPoint.x, this.tapPoint.y)) {
             this.tapView = view;
         }
     }
