@@ -4,9 +4,7 @@ import Renderer from '../renderers/Renderer';
 
 // import RenderCheck from "../renderers/RenderCheck";
 import Timer from "../utils/Timer";
-import Rectangle from "./Rectangle";
 import { touchEvent } from "../events/Events";
-import LoadQueue from "../utils/LoadQueue";
 import { loadQueue } from "../utils/Util";
 import Bitmap from "./Bitmap";
 
@@ -41,6 +39,8 @@ export default class Stage extends DisplayObjectContainer {
         this.addChild(view1);
         view1.x = 50;
         view1.y = 100;
+
+        this.view1 = view1;
 
 
         let view2 = new DisplayObjectContainer();
@@ -81,17 +81,43 @@ export default class Stage extends DisplayObjectContainer {
         // let loadQueue = new LoadQueue( {type:'png',src:'./images/1.png'});
         // loadQueue.start();
 
+        loadQueue.add({ type: 'png', src: './images/1.png' });
         loadQueue.add({ type: 'png', src: './images/2.png' });
+        loadQueue.add({ type: 'png', src: './images/3.png' });
+        loadQueue.add({ type: 'png', src: './images/4.png' });
+
         loadQueue.start();
-        loadQueue.on('complete',this.test.bind(this));
+        loadQueue.on('complete', this.test.bind(this));
 
 
 
     }
     test() {
-        let view4 = new Bitmap('./images/2.png');
-        this.addChild(view4);
-        view4.x = 0;
-        view4.y = 0;
+        // let view4 = new Bitmap('./images/1.png');
+        // this.addChild(view4);
+        // view4.x = 0;
+        // view4.y = 0;
+
+        // let view5 = new Bitmap('./images/2.png');
+        // this.addChild(view5);
+        // view5.x = 120;
+        // view5.y = 0;
+
+        // let view6 = new Bitmap('./images/3.png');
+        // this.addChild(view6);
+        // view6.x = 240;
+        // view6.y = 0;
+
+        let view7 = new Bitmap('./images/1.png');
+        this.addChild(view7);
+        view7.x = 0;
+        view7.y = 0;
+        view7.on(touchEvent.tap, this.aaa, this)
+        this.view7 = view7;
+    }
+    aaa() {
+        console.log(this);
+
+
     }
 }

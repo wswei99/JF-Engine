@@ -7,19 +7,25 @@ export default class CanvasRender {
         this.blendMode = 'source-over';
         this.stage = stage;
         // wsw 屏幕适配
-
+        let passiveEvent = false;
+        try {
+            let opts = Object.defineProperty({}, 'passive', {
+                get: function () {
+                    passiveEvent = true;
+                    return null;
+                }
+            });
+            window.addEventListener("test", null, opts);
+        } catch (e) { }
+        passiveEvent = passiveEvent ? { capture: true, passive: true } : true;
         // 绑定事件
-        this.canvas.addEventListener(touchEvent.tap, this.touchHandler.bind(this));
-        this.canvas.addEventListener(touchEvent.touchMove, this.touchHandler.bind(this));
-        this.canvas.addEventListener(touchEvent.touchEnd, this.touchHandler.bind(this));
-
-        this.textNum = 0;
-
+        this.canvas.addEventListener(touchEvent.tap, this.touchHandler.bind(this), passiveEvent);
+        this.canvas.addEventListener(touchEvent.touchMove, this.touchHandler.bind(this), passiveEvent);
+        this.canvas.addEventListener(touchEvent.touchEnd, this.touchHandler.bind(this), passiveEvent);
+        // 事件相关
         this.checkPointInPath = false;
         this.tapPoint = new Point();
         this.tapView = null;
-
-        this.testNum = 0;
     }
     update(view = this.stage, firstView = true) {
         if (view.visible && view.alpha > 0) {
@@ -29,7 +35,7 @@ export default class CanvasRender {
                 this.update(view.nextView);
             }
             this.context.restore();
-            if(!firstView){
+            if (!firstView) {
                 return;
             }
             // 找出所有的兄弟视图
@@ -49,7 +55,6 @@ export default class CanvasRender {
         }
     }
     render(view) {
-
         // preRender
         if (view.blendMode !== this.blendMode) {
             this.context.globalCompositeOperation = view.blendMode;
@@ -70,8 +75,10 @@ export default class CanvasRender {
                 return;
             }
             this.context.drawImage(view.texture, 0, 0, view.width, view.height);
+            this.context.beginPath();
+            this.context.rect(0, 0, view.width, view.height);
+            this.context.closePath();
         }
-
         // 检测点击元素
         if (this.checkPointInPath && this.context.isPointInPath(this.tapPoint.x, this.tapPoint.y)) {
             this.tapView = view;
@@ -99,15 +106,10 @@ export default class CanvasRender {
         }
         this.tapPoint.x = event.pageX || event.clientX;
         this.tapPoint.y = event.pageY || event.slientY;
-
         // 要求渲染机制去根据点来找出view
         this.checkPointInPath = true;
         this.update();
         this.checkPointInPath = false;
-        this.tapView.emit(type)
-    }
-    hitTestPoint(view, point) {
-        console.log(view.getWorldMatrix());
-        console.log(view.transform.matrix);
+        this.tapView && this.tapView.emit(type);
     }
 }

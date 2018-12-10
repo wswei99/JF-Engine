@@ -3,12 +3,15 @@ import Matrix from "./Matrix";
 export default class Transform {
     constructor() {
         this.matrix = new Matrix();
+        // 位置
         this.x = 0;
         this.y = 0;
+        // 缩放
         this.scaleX = 1;
         this.scaleY = 1;
+        // 旋转
         this.rotate = 0;
-
+        // 倾斜
         this.skewX = 0;
         this.skewY = 0;
         // 锚点

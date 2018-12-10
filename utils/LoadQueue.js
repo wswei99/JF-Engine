@@ -60,7 +60,7 @@ export default class LoadQueue extends EventEmitter {
                 loader.onLoad = (e) => {
                     loader.onLoad = onLoad;
                     loader.onError = onError;
-                    let content = onLoad && onLoad.call(loader, e) || e.target;
+                    let content = (onLoad && onLoad.call(loader, e)) || e.target;
                     this._onItemLoad(index, content);
                 }
                 loader.onError = (e) => {
@@ -92,6 +92,8 @@ export default class LoadQueue extends EventEmitter {
             case 'js':
             case 'jsonp':
                 // loader = new ScriptLoader();
+                break;
+            default :
                 break;
         }
         return loader;
@@ -133,7 +135,8 @@ export default class LoadQueue extends EventEmitter {
 
     getExtension(src){
         var extRegExp = /\/?[^/]+\.(\w+)(\?\S+)?$/i, match, extension;
-        if(match = src.match(extRegExp)){
+        match = src.match(extRegExp)
+        if(match){
             extension = match[1].toLowerCase();
         }
         return extension || null;

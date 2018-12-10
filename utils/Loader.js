@@ -1,7 +1,4 @@
 export default class Loader{
-    constructor(){
-
-    }
     load(data){
         let image = new Image();
         if(data.crossOrigin){

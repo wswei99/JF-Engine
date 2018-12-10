@@ -10,7 +10,5 @@ export default class Bitmap extends DisplayObject{
         this.height = item.content.height;
         this.loaded = item.loaded;
         this.texture = item.content;
-
-
     }
 }

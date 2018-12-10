@@ -13,3 +13,6 @@ export const timerEvent = {
     timerComplete:'timerComplete'
 }
 
+export const wheelEvent = "onwheel" in HTMLDivElement.prototype ? "wheel" :
+    document.onmousewheel !== undefined ? "mousewheel" : "DOMMouseScroll";
+
